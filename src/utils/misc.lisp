@@ -2,9 +2,8 @@
   (:use #:cl)
   (:import-from #:salza2
                 #:gzip-stream)
-  (:import-from #:ironclad
-                #:byte-array-to-hex-string
-                #:digest-sequence)
+  (:import-from #:md5
+                #:md5sum-string)
   (:import-from #:babel
                 #:string-to-octets)
   (:export #:gen-id
@@ -228,10 +227,15 @@ answering its result."
         (gzip-stream istream ostream)))
     (probe-file output)))
 
+(defun byte-array-to-hex-string (vector)
+  (with-output-to-string (str)
+    (loop :for b :across vector
+          :do (format str "~16,2,'0r" b))))
+
 (defun md5 (string)
   (byte-array-to-hex-string
-    (digest-sequence
-      :md5 (string-to-octets string :encoding :utf-8))))
+    (md5sum-sequence
+      (string-to-octets string :encoding :utf-8))))
 
 (defun concatenate-keywords (&rest symbols)
   (intern 
